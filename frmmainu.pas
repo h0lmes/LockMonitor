@@ -53,10 +53,10 @@ type
   end;
 
 const
-  NotifyForThisSession = 0;
-  SessionChangeMessage = $02B1;
-  SessionLockParam     = $7;
-  SessionUnlockParam   = $8;
+  NOTIFY_FOR_THIS_SESSION = 0;
+  WM_WTSSESSION_CHANGE = $02B1;
+  WTS_SESSION_LOCK     = $7;
+  WTS_SESSION_UNLOCK   = $8;
   POWER_ON             = 1;
   POWER_STANDBY        = 2;
   POWER_SUSPEND        = 3;
@@ -105,7 +105,7 @@ begin
     exit;
   end;
 
-  WTSRegisterSessionNotification(Handle, NotifyForThisSession);
+  WTSRegisterSessionNotification(Handle, NOTIFY_FOR_THIS_SESSION);
 end;
 //------------------------------------------------------------------------------
 procedure Tfrmmain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -129,10 +129,10 @@ procedure Tfrmmain.NativeWndProc(var message: TMessage);
 begin
   message.result := 0;
   case message.msg of
-    SessionChangeMessage:
+    WM_WTSSESSION_CHANGE:
       begin
-        if message.wParam = SessionLockParam then OnSessionLock
-        else if message.wParam = SessionUnlockParam then OnSessionUnlock;
+        if message.wParam = WTS_SESSION_LOCK then OnSessionLock
+        else if message.wParam = WTS_SESSION_UNLOCK then OnSessionUnlock;
       end;
     else message.result := CallWindowProc(FPrevWndProc, Handle, message.Msg, message.wParam, message.lParam);
   end;
@@ -159,8 +159,8 @@ begin
   begin
 		for i := 0 to mcnt - 1 do
     begin
-      if frm.MonHandles.IndexOf(pointer(Mons[i].hPhysicalMonitor)) < 0 then
-        frm.MonHandles.Add(pointer(Mons[i].hPhysicalMonitor));
+      if frm.MonHandles.IndexOf(Pointer(Mons[i].hPhysicalMonitor)) < 0 then
+        frm.MonHandles.Add(Pointer(Mons[i].hPhysicalMonitor));
     end;
   end;
 	result := true;
@@ -183,11 +183,11 @@ begin
   begin
     if Parameters.bSamsung then
     begin
-      if value then SetVCPFeature(dword(MonHandles.Items[i]), $E1, 1)
-      else SetVCPFeature(dword(MonHandles.Items[i]), $E1, 0);
+      if value then SetVCPFeature(THandle(MonHandles.Items[i]), $E1, 1)
+      else SetVCPFeature(THandle(MonHandles.Items[i]), $E1, 0);
     end else begin
-      if value then SetVCPFeature(dword(MonHandles.Items[i]), $D6, POWER_ON)
-      else SetVCPFeature(dword(MonHandles.Items[i]), $D6, POWER_OFF);
+      if value then SetVCPFeature(THandle(MonHandles.Items[i]), $D6, POWER_ON)
+      else SetVCPFeature(THandle(MonHandles.Items[i]), $D6, POWER_OFF);
     end;
     inc(i);
   end;

@@ -145,7 +145,7 @@ object frmmain: Tfrmmain
   }
   OnClose = FormClose
   OnShow = FormShow
-  LCLVersion = '1.2.4.0'
+  LCLVersion = '1.6.0.4'
   object chbSamsung: TCheckBox
     Left = 15
     Height = 19
